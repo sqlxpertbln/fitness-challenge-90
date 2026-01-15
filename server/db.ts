@@ -12,7 +12,8 @@ import {
   InsertDailySummary, dailySummaries,
   InsertBlogPost, blogPosts,
   InsertService, services,
-  InsertInquiry, inquiries
+  InsertInquiry, inquiries,
+  InsertUserGoal, userGoals
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -638,4 +639,66 @@ export async function updateInquiryStatus(id: number, status: "new" | "contacted
   if (!db) throw new Error("Database not available");
   
   await db.update(inquiries).set({ status }).where(eq(inquiries.id, id));
+}
+
+// ============ USER GOALS ============
+
+export async function createUserGoal(goal: InsertUserGoal) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.insert(userGoals).values(goal);
+  return result[0].insertId;
+}
+
+export async function getUserGoals(userId: number, activeOnly: boolean = true) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  if (activeOnly) {
+    return db.select().from(userGoals)
+      .where(and(eq(userGoals.userId, userId), eq(userGoals.isActive, true)))
+      .orderBy(desc(userGoals.createdAt));
+  }
+  
+  return db.select().from(userGoals)
+    .where(eq(userGoals.userId, userId))
+    .orderBy(desc(userGoals.createdAt));
+}
+
+export async function getUserGoalById(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  const result = await db.select().from(userGoals)
+    .where(and(eq(userGoals.id, id), eq(userGoals.userId, userId)))
+    .limit(1);
+  
+  return result[0] || null;
+}
+
+export async function updateUserGoal(id: number, userId: number, data: Partial<InsertUserGoal>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(userGoals)
+    .set(data)
+    .where(and(eq(userGoals.id, id), eq(userGoals.userId, userId)));
+}
+
+export async function deleteUserGoal(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.delete(userGoals)
+    .where(and(eq(userGoals.id, id), eq(userGoals.userId, userId)));
+}
+
+export async function completeUserGoal(id: number, userId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  
+  await db.update(userGoals)
+    .set({ isCompleted: true, completedAt: new Date() })
+    .where(and(eq(userGoals.id, id), eq(userGoals.userId, userId)));
 }

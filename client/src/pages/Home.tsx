@@ -11,8 +11,10 @@ import {
   Dumbbell, 
   Flame, 
   Heart, 
+  Instagram,
   LineChart, 
   Moon, 
+  Play,
   Scale, 
   Target,
   Droplets,
@@ -42,6 +44,7 @@ export default function Home() {
             <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
             <a href="#tracking" className="text-muted-foreground hover:text-foreground transition-colors">Tracking</a>
             <a href="#services" className="text-muted-foreground hover:text-foreground transition-colors">Services</a>
+            <a href="#instagram" className="text-muted-foreground hover:text-foreground transition-colors">Instagram</a>
             <Link href="/blog" className="text-muted-foreground hover:text-foreground transition-colors">Blog</Link>
           </div>
           
@@ -454,6 +457,96 @@ export default function Home() {
                 </Link>
               </CardContent>
             </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* Instagram Feed Section */}
+      <section id="instagram" className="py-20">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <div className="flex items-center justify-center gap-3 mb-4">
+              <Instagram className="w-8 h-8 text-pink-500" />
+              <h2 className="text-3xl md:text-4xl font-bold">
+                Folge der Challenge
+              </h2>
+            </div>
+            <div className="section-divider mb-6" />
+            <p className="text-lg text-muted-foreground">
+              Tägliche Updates, Motivation und Behind-the-Scenes auf Instagram.
+              Werde Teil der Community!
+            </p>
+          </div>
+          
+          {/* Instagram Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {/* Video Placeholder 1 */}
+            <div className="aspect-square rounded-xl bg-muted/50 border border-border overflow-hidden group cursor-pointer relative">
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                  <Play className="w-5 h-5 text-primary ml-1" />
+                </div>
+              </div>
+              <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                <Dumbbell className="w-8 h-8 mb-2" />
+                <span className="text-xs">Training Day 1</span>
+              </div>
+            </div>
+            
+            {/* Video Placeholder 2 */}
+            <div className="aspect-square rounded-xl bg-muted/50 border border-border overflow-hidden group cursor-pointer relative">
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                  <Play className="w-5 h-5 text-primary ml-1" />
+                </div>
+              </div>
+              <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                <Scale className="w-8 h-8 mb-2" />
+                <span className="text-xs">Fortschritt Woche 1</span>
+              </div>
+            </div>
+            
+            {/* Video Placeholder 3 */}
+            <div className="aspect-square rounded-xl bg-muted/50 border border-border overflow-hidden group cursor-pointer relative">
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                  <Play className="w-5 h-5 text-primary ml-1" />
+                </div>
+              </div>
+              <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                <Heart className="w-8 h-8 mb-2" />
+                <span className="text-xs">Sauna Routine</span>
+              </div>
+            </div>
+            
+            {/* Video Placeholder 4 */}
+            <div className="aspect-square rounded-xl bg-muted/50 border border-border overflow-hidden group cursor-pointer relative">
+              <div className="absolute inset-0 bg-black/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="w-12 h-12 rounded-full bg-white/90 flex items-center justify-center">
+                  <Play className="w-5 h-5 text-primary ml-1" />
+                </div>
+              </div>
+              <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground">
+                <Brain className="w-8 h-8 mb-2" />
+                <span className="text-xs">Mindset Talk</span>
+              </div>
+            </div>
+          </div>
+          
+          {/* Instagram CTA */}
+          <div className="text-center">
+            <a 
+              href="https://instagram.com" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white font-semibold hover:opacity-90 transition-opacity"
+            >
+              <Instagram className="w-5 h-5" />
+              @fitness_challenge_90 folgen
+            </a>
+            <p className="text-sm text-muted-foreground mt-4">
+              Tipp: Ersetze die Platzhalter mit deinen echten Instagram-Reels!
+            </p>
           </div>
         </div>
       </section>

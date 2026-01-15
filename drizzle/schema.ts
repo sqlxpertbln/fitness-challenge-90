@@ -334,3 +334,47 @@ export const inquiries = mysqlTable("inquiries", {
 
 export type Inquiry = typeof inquiries.$inferSelect;
 export type InsertInquiry = typeof inquiries.$inferInsert;
+
+/**
+ * User goals for tracking progress
+ */
+export const userGoals = mysqlTable("user_goals", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  
+  // Goal type
+  goalType: mysqlEnum("goalType", [
+    "weight", 
+    "water", 
+    "sleep", 
+    "training", 
+    "calories",
+    "steps",
+    "body_fat"
+  ]).notNull(),
+  
+  // Target values
+  targetValue: decimal("targetValue", { precision: 10, scale: 2 }).notNull(),
+  currentValue: decimal("currentValue", { precision: 10, scale: 2 }),
+  startValue: decimal("startValue", { precision: 10, scale: 2 }),
+  
+  // Unit (kg, L, hours, sessions, kcal, steps, %)
+  unit: varchar("unit", { length: 20 }).notNull(),
+  
+  // Timeframe
+  startDate: date("startDate").notNull(),
+  targetDate: date("targetDate"),
+  
+  // Status
+  isActive: boolean("isActive").default(true),
+  isCompleted: boolean("isCompleted").default(false),
+  completedAt: timestamp("completedAt"),
+  
+  notes: text("notes"),
+  
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserGoal = typeof userGoals.$inferSelect;
+export type InsertUserGoal = typeof userGoals.$inferInsert;

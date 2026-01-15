@@ -23,6 +23,7 @@ import {
   Plus,
   Scale,
   Target,
+  Thermometer,
   TrendingUp,
   User,
   LogOut
@@ -41,6 +42,7 @@ export default function Dashboard() {
   const bodyQuery = trpc.body.getByDate.useQuery({ date: selectedDate }, { enabled: isAuthenticated });
   const waterQuery = trpc.water.dailyTotal.useQuery({ date: selectedDate }, { enabled: isAuthenticated });
   const trainingQuery = trpc.training.list.useQuery({ startDate: selectedDate, endDate: selectedDate }, { enabled: isAuthenticated });
+  const saunaQuery = trpc.sauna.list.useQuery({ startDate: selectedDate, endDate: selectedDate }, { enabled: isAuthenticated });
   
   // Mutations
   const sleepMutation = trpc.sleep.create.useMutation({
@@ -99,6 +101,15 @@ export default function Dashboard() {
     onSuccess: () => {
       toast.success("Mahlzeit gespeichert");
       nutritionQuery.refetch();
+    },
+    onError: () => toast.error("Fehler beim Speichern"),
+  });
+
+  // Sauna
+  const saunaMutation = trpc.sauna.create.useMutation({
+    onSuccess: () => {
+      toast.success("Sauna-Besuch gespeichert");
+      saunaQuery.refetch();
     },
     onError: () => toast.error("Fehler beim Speichern"),
   });
@@ -175,12 +186,19 @@ export default function Dashboard() {
             <User className="w-4 h-4" />
             Profil
           </Button>
-          <Link href="/export">
-            <Button variant="ghost" className="w-full justify-start gap-2">
-              <Download className="w-4 h-4" />
-              Daten Export
-            </Button>
-          </Link>
+<Link href="/goals">
+          <Button variant="ghost" className="w-full justify-start gap-3">
+            <Target className="w-5 h-5" />
+            Meine Ziele
+          </Button>
+        </Link>
+        
+        <Link href="/export">
+          <Button variant="ghost" className="w-full justify-start gap-3">
+            <Download className="w-5 h-5" />
+            Daten Export
+          </Button>
+        </Link>
         </nav>
         
         <div className="absolute bottom-4 left-4 right-4 space-y-2">
@@ -324,6 +342,10 @@ export default function Dashboard() {
             <TabsTrigger value="nutrition" className="gap-2 hidden lg:flex">
               <Target className="w-4 h-4" />
               <span className="hidden sm:inline">Ernährung</span>
+            </TabsTrigger>
+            <TabsTrigger value="sauna" className="gap-2">
+              <Thermometer className="w-4 h-4" />
+              <span className="hidden sm:inline">Sauna</span>
             </TabsTrigger>
           </TabsList>
 
@@ -956,6 +978,128 @@ export default function Dashboard() {
                           {nutritionQuery.data.reduce((sum, e) => sum + (e.calories || 0), 0)} kcal
                         </span>
                       </div>
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Sauna Tab */}
+          <TabsContent value="sauna">
+            <Card className="fitness-card">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Thermometer className="w-5 h-5 text-orange-500" />
+                  Sauna
+                </CardTitle>
+                <CardDescription>
+                  Erfasse deine Sauna-Besuche und Wellness-Aktivitäten
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const duration = Number(formData.get("duration"));
+                  if (!duration) {
+                    toast.error("Bitte gib die Dauer an");
+                    return;
+                  }
+                  saunaMutation.mutate({
+                    entryDate: selectedDate,
+                    duration,
+                    temperature: Number(formData.get("temperature")) || undefined,
+                    saunaType: formData.get("saunaType") as "finnish" | "bio" | "steam" | "infrared" | undefined,
+                    rounds: Number(formData.get("rounds")) || undefined,
+                    notes: formData.get("notes") as string || undefined,
+                  });
+                  e.currentTarget.reset();
+                }} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="saunaType">Sauna-Typ</Label>
+                      <Select name="saunaType">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Auswählen..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="finnish">Finnische Sauna</SelectItem>
+                          <SelectItem value="bio">Bio-Sauna</SelectItem>
+                          <SelectItem value="steam">Dampfbad</SelectItem>
+                          <SelectItem value="infrared">Infrarot-Sauna</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="temperature">Temperatur (°C)</Label>
+                      <Input 
+                        id="temperature" 
+                        name="temperature" 
+                        type="number" 
+                        placeholder="z.B. 85"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="duration">Gesamtdauer (Minuten)</Label>
+                      <Input 
+                        id="duration" 
+                        name="duration" 
+                        type="number" 
+                        placeholder="z.B. 45"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="rounds">Anzahl Gänge</Label>
+                      <Input 
+                        id="rounds" 
+                        name="rounds" 
+                        type="number" 
+                        placeholder="z.B. 3"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Notizen</Label>
+                    <Textarea 
+                      id="notes" 
+                      name="notes" 
+                      placeholder="z.B. Aufguss mit Eukalyptus, danach Eisbecken"
+                    />
+                  </div>
+                  
+                  <Button type="submit" disabled={saunaMutation.isPending}>
+                    {saunaMutation.isPending ? "Speichern..." : "Sauna-Besuch speichern"}
+                  </Button>
+                </form>
+                
+                {/* Today's sauna sessions */}
+                {saunaQuery.data && saunaQuery.data.length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <h4 className="font-semibold mb-4">Heutige Sauna-Besuche</h4>
+                    <div className="space-y-2">
+                      {saunaQuery.data.map((entry) => (
+                        <div key={entry.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                          <div className="flex items-center gap-3">
+                            <Thermometer className="w-4 h-4 text-orange-500" />
+                            <span className="font-medium">
+                              {entry.saunaType === "finnish" ? "Finnische Sauna" :
+                               entry.saunaType === "bio" ? "Bio-Sauna" :
+                               entry.saunaType === "steam" ? "Dampfbad" :
+                               entry.saunaType === "infrared" ? "Infrarot" : "Sauna"}
+                            </span>
+                          </div>
+                          <div className="text-sm text-muted-foreground flex items-center gap-2">
+                            {entry.temperature && <span>{entry.temperature}°C</span>}
+                            {entry.duration && <span>{entry.duration} min</span>}
+                            {entry.rounds && <span>{entry.rounds} Gänge</span>}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 )}

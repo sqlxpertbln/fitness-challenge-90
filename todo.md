@@ -74,8 +74,8 @@
 - [x] Ersten Blog-Beitrag über Challenge-Ziele erstellen
 
 ## Neue Anforderungen (15.01.2026 - Update 2)
-- [ ] GitHub-Repository erstellen
-- [ ] Branch-Struktur einrichten (main, develop, feature-branches)
-- [ ] Sauna-Tracking im Dashboard aktivieren
-- [ ] Fortschritts-Ziele Funktion implementieren (Zielgewicht, Wassermenge etc.)
-- [ ] Instagram-Feed auf Landingpage einbinden
+- [x] GitHub-Repository erstellen (https://github.com/sqlxpertbln/fitness-challenge-90)
+- [x] Branch-Struktur einrichten (main, develop, feature/sauna-goals-instagram)
+- [x] Sauna-Tracking im Dashboard aktivieren
+- [x] Fortschritts-Ziele Funktion implementieren (Zielgewicht, Wassermenge etc.)
+- [x] Instagram-Feed auf Landingpage einbinden

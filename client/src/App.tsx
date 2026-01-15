@@ -13,6 +13,7 @@ import AdminBlog from "./pages/admin/AdminBlog";
 import AdminBlogEdit from "./pages/admin/AdminBlogEdit";
 import Progress from "./pages/Progress";
 import Export from "./pages/Export";
+import Goals from "./pages/Goals";
 
 function Router() {
   return (
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/progress" component={Progress} />
       <Route path="/export" component={Export} />
+      <Route path="/goals" component={Goals} />
       <Route path="/services" component={Services} />
       <Route path="/admin/blog" component={AdminBlog} />
       <Route path="/admin/blog/new" component={AdminBlogEdit} />

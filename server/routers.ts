@@ -699,6 +699,76 @@ export const appRouter = router({
         return { success: true };
       }),
   }),
+
+  // ============ USER GOALS ============
+  goals: router({
+    create: protectedProcedure
+      .input(z.object({
+        goalType: z.enum(["weight", "water", "sleep", "training", "calories", "steps", "body_fat"]),
+        targetValue: z.number(),
+        startValue: z.number().optional(),
+        currentValue: z.number().optional(),
+        unit: z.string(),
+        startDate: z.string(),
+        targetDate: z.string().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const id = await db.createUserGoal({
+          userId: ctx.user.id,
+          goalType: input.goalType,
+          targetValue: input.targetValue.toString(),
+          startValue: input.startValue?.toString(),
+          currentValue: input.currentValue?.toString(),
+          unit: input.unit,
+          startDate: new Date(input.startDate),
+          targetDate: input.targetDate ? new Date(input.targetDate) : undefined,
+          notes: input.notes,
+        });
+        return { id };
+      }),
+    list: protectedProcedure
+      .input(z.object({ activeOnly: z.boolean().optional() }).optional())
+      .query(async ({ ctx, input }) => {
+        return db.getUserGoals(ctx.user.id, input?.activeOnly ?? true);
+      }),
+    getById: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ ctx, input }) => {
+        return db.getUserGoalById(input.id, ctx.user.id);
+      }),
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        targetValue: z.number().optional(),
+        currentValue: z.number().optional(),
+        targetDate: z.string().optional(),
+        isActive: z.boolean().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await db.updateUserGoal(input.id, ctx.user.id, {
+          targetValue: input.targetValue?.toString(),
+          currentValue: input.currentValue?.toString(),
+          targetDate: input.targetDate ? new Date(input.targetDate) : undefined,
+          isActive: input.isActive,
+          notes: input.notes,
+        });
+        return { success: true };
+      }),
+    complete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.completeUserGoal(input.id, ctx.user.id);
+        return { success: true };
+      }),
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await db.deleteUserGoal(input.id, ctx.user.id);
+        return { success: true };
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
