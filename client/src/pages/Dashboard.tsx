@@ -14,6 +14,7 @@ import {
   Activity, 
   ArrowLeft, 
   Calendar,
+  Download,
   Droplets, 
   Dumbbell, 
   Flame, 
@@ -74,6 +75,34 @@ export default function Dashboard() {
     onError: () => toast.error("Fehler beim Speichern"),
   });
 
+  // Blood Pressure
+  const bloodPressureQuery = trpc.bloodPressure.list.useQuery(
+    { startDate: selectedDate, endDate: selectedDate },
+    { enabled: isAuthenticated }
+  );
+  
+  const bloodPressureMutation = trpc.bloodPressure.create.useMutation({
+    onSuccess: () => {
+      toast.success("Blutdruck gespeichert");
+      bloodPressureQuery.refetch();
+    },
+    onError: () => toast.error("Fehler beim Speichern"),
+  });
+
+  // Nutrition
+  const nutritionQuery = trpc.nutrition.list.useQuery(
+    { date: selectedDate },
+    { enabled: isAuthenticated }
+  );
+  
+  const nutritionMutation = trpc.nutrition.create.useMutation({
+    onSuccess: () => {
+      toast.success("Mahlzeit gespeichert");
+      nutritionQuery.refetch();
+    },
+    onError: () => toast.error("Fehler beim Speichern"),
+  });
+
   const handleLogout = async () => {
     await logout();
     setLocation("/");
@@ -92,7 +121,7 @@ export default function Dashboard() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md w-full mx-4">
           <CardHeader className="text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
               <Flame className="w-8 h-8 text-primary-foreground" />
             </div>
             <CardTitle>Anmeldung erforderlich</CardTitle>
@@ -121,7 +150,7 @@ export default function Dashboard() {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border p-4 hidden lg:block">
         <div className="flex items-center gap-2 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
             <Flame className="w-6 h-6 text-primary-foreground" />
           </div>
           <span className="text-lg font-bold">Dashboard</span>
@@ -146,6 +175,12 @@ export default function Dashboard() {
             <User className="w-4 h-4" />
             Profil
           </Button>
+          <Link href="/export">
+            <Button variant="ghost" className="w-full justify-start gap-2">
+              <Download className="w-4 h-4" />
+              Daten Export
+            </Button>
+          </Link>
         </nav>
         
         <div className="absolute bottom-4 left-4 right-4 space-y-2">
@@ -660,13 +695,122 @@ export default function Dashboard() {
                   Blutdruck
                 </CardTitle>
                 <CardDescription>
-                  Erfasse deine Blutdruckwerte
+                  Erfasse deine Blutdruckwerte vom Blutdruckmessgerät
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  Blutdruck-Tracking wird in Kürze verfügbar sein.
-                </p>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  const systolic = Number(formData.get("systolic"));
+                  const diastolic = Number(formData.get("diastolic"));
+                  if (!systolic || !diastolic) {
+                    toast.error("Systolisch und Diastolisch sind erforderlich");
+                    return;
+                  }
+                  bloodPressureMutation.mutate({
+                    entryDate: selectedDate,
+                    systolic,
+                    diastolic,
+                    pulse: Number(formData.get("pulse")) || undefined,
+                    position: formData.get("position") as "sitting" | "standing" | "lying" || undefined,
+                    arm: formData.get("arm") as "left" | "right" || undefined,
+                    notes: formData.get("notes") as string || undefined,
+                  });
+                  e.currentTarget.reset();
+                }} className="space-y-6">
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="systolic">Systolisch (mmHg) *</Label>
+                      <Input 
+                        id="systolic" 
+                        name="systolic" 
+                        type="number" 
+                        placeholder="z.B. 120"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="diastolic">Diastolisch (mmHg) *</Label>
+                      <Input 
+                        id="diastolic" 
+                        name="diastolic" 
+                        type="number" 
+                        placeholder="z.B. 80"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="pulse">Puls (bpm)</Label>
+                      <Input 
+                        id="pulse" 
+                        name="pulse" 
+                        type="number" 
+                        placeholder="z.B. 72"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="position">Position</Label>
+                      <Select name="position">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Auswählen..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="sitting">Sitzend</SelectItem>
+                          <SelectItem value="standing">Stehend</SelectItem>
+                          <SelectItem value="lying">Liegend</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="arm">Arm</Label>
+                      <Select name="arm">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Auswählen..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="left">Links</SelectItem>
+                          <SelectItem value="right">Rechts</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="notes">Notizen</Label>
+                      <Input 
+                        id="notes" 
+                        name="notes" 
+                        placeholder="z.B. Nach dem Aufstehen"
+                      />
+                    </div>
+                  </div>
+                  
+                  <Button type="submit" disabled={bloodPressureMutation.isPending}>
+                    {bloodPressureMutation.isPending ? "Speichern..." : "Blutdruck speichern"}
+                  </Button>
+                </form>
+                
+                {/* Today's measurements */}
+                {bloodPressureQuery.data && bloodPressureQuery.data.length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <h4 className="font-semibold mb-4">Heutige Messungen</h4>
+                    <div className="space-y-2">
+                      {bloodPressureQuery.data.map((entry) => (
+                        <div key={entry.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                          <div className="flex items-center gap-3">
+                            <Heart className="w-4 h-4 text-destructive" />
+                            <span className="font-medium">{entry.systolic}/{entry.diastolic} mmHg</span>
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {entry.pulse ? `${entry.pulse} bpm` : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -684,9 +828,137 @@ export default function Dashboard() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">
-                  Ernährungs-Tracking wird in Kürze verfügbar sein.
-                </p>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const formData = new FormData(e.currentTarget);
+                  nutritionMutation.mutate({
+                    entryDate: selectedDate,
+                    mealType: formData.get("mealType") as "breakfast" | "lunch" | "dinner" | "snack" || undefined,
+                    description: formData.get("description") as string || undefined,
+                    calories: Number(formData.get("calories")) || undefined,
+                    protein: formData.get("protein") as string || undefined,
+                    carbs: formData.get("carbs") as string || undefined,
+                    fat: formData.get("fat") as string || undefined,
+                    notes: formData.get("notes") as string || undefined,
+                  });
+                  e.currentTarget.reset();
+                }} className="space-y-6">
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="mealType">Mahlzeit</Label>
+                      <Select name="mealType">
+                        <SelectTrigger>
+                          <SelectValue placeholder="Auswählen..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="breakfast">Frühstück</SelectItem>
+                          <SelectItem value="lunch">Mittagessen</SelectItem>
+                          <SelectItem value="dinner">Abendessen</SelectItem>
+                          <SelectItem value="snack">Snack</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="description">Beschreibung</Label>
+                      <Input 
+                        id="description" 
+                        name="description" 
+                        placeholder="z.B. Haferflocken mit Banane"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="calories">Kalorien (kcal)</Label>
+                      <Input 
+                        id="calories" 
+                        name="calories" 
+                        type="number" 
+                        placeholder="z.B. 450"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="protein">Protein (g)</Label>
+                      <Input 
+                        id="protein" 
+                        name="protein" 
+                        placeholder="z.B. 25"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="carbs">Kohlenhydrate (g)</Label>
+                      <Input 
+                        id="carbs" 
+                        name="carbs" 
+                        placeholder="z.B. 60"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="fat">Fett (g)</Label>
+                      <Input 
+                        id="fat" 
+                        name="fat" 
+                        placeholder="z.B. 15"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <Label htmlFor="notes">Notizen</Label>
+                    <Input 
+                      id="notes" 
+                      name="notes" 
+                      placeholder="z.B. Selbst gekocht, viel Gemüse"
+                    />
+                  </div>
+                  
+                  <Button type="submit" disabled={nutritionMutation.isPending}>
+                    {nutritionMutation.isPending ? "Speichern..." : "Mahlzeit speichern"}
+                  </Button>
+                </form>
+                
+                {/* Today's meals */}
+                {nutritionQuery.data && nutritionQuery.data.length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-border">
+                    <h4 className="font-semibold mb-4">Heutige Mahlzeiten</h4>
+                    <div className="space-y-2">
+                      {nutritionQuery.data.map((entry) => (
+                        <div key={entry.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+                          <div className="flex items-center gap-3">
+                            <Target className="w-4 h-4 text-chart-5" />
+                            <div>
+                              <span className="font-medium capitalize">
+                                {entry.mealType === "breakfast" ? "Frühstück" :
+                                 entry.mealType === "lunch" ? "Mittagessen" :
+                                 entry.mealType === "dinner" ? "Abendessen" :
+                                 entry.mealType === "snack" ? "Snack" : "Mahlzeit"}
+                              </span>
+                              {entry.description && (
+                                <span className="text-sm text-muted-foreground ml-2">
+                                  - {entry.description}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <span className="text-sm text-muted-foreground">
+                            {entry.calories ? `${entry.calories} kcal` : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Daily summary */}
+                    <div className="mt-4 p-4 rounded-lg bg-primary/5 border border-primary/10">
+                      <div className="flex items-center justify-between">
+                        <span className="font-medium">Tagesgesamt</span>
+                        <span className="font-bold text-primary">
+                          {nutritionQuery.data.reduce((sum, e) => sum + (e.calories || 0), 0)} kcal
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
           </TabsContent>

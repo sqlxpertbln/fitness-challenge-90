@@ -153,7 +153,7 @@ export default function AdminBlogEdit() {
         <div className="container flex items-center justify-between h-16">
           <Link href="/">
             <div className="flex items-center gap-2 cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
                 <Flame className="w-6 h-6 text-primary-foreground" />
               </div>
               <span className="text-xl font-bold">Admin</span>

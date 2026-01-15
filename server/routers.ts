@@ -651,6 +651,27 @@ export const appRouter = router({
       }),
   }),
 
+  // ============ DATA EXPORT ============
+  export: router({
+    all: protectedProcedure
+      .input(z.object({
+        startDate: z.string().optional(),
+        endDate: z.string().optional(),
+      }).optional())
+      .query(async ({ ctx, input }) => {
+        const [sleep, body, bloodPressure, nutrition, water, training, sauna] = await Promise.all([
+          db.getSleepEntries(ctx.user.id, input?.startDate, input?.endDate),
+          db.getBodyEntries(ctx.user.id, input?.startDate, input?.endDate),
+          db.getBloodPressureEntries(ctx.user.id, input?.startDate, input?.endDate),
+          db.getNutritionEntries(ctx.user.id, input?.startDate),
+          db.getWaterEntries(ctx.user.id, input?.startDate || new Date().toISOString().split('T')[0]),
+          db.getTrainingEntries(ctx.user.id, input?.startDate, input?.endDate),
+          db.getSaunaEntries(ctx.user.id, input?.startDate, input?.endDate),
+        ]);
+        return { sleep, body, bloodPressure, nutrition, water, training, sauna };
+      }),
+  }),
+
   // ============ INQUIRIES ============
   inquiries: router({
     create: publicProcedure

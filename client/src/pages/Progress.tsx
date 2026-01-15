@@ -80,7 +80,7 @@ export default function Progress() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Card className="max-w-md w-full mx-4">
           <CardHeader className="text-center">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4">
+            <div className="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center mx-auto mb-4">
               <Flame className="w-8 h-8 text-primary-foreground" />
             </div>
             <CardTitle>Anmeldung erforderlich</CardTitle>
@@ -141,7 +141,7 @@ export default function Progress() {
       {/* Sidebar */}
       <aside className="fixed left-0 top-0 bottom-0 w-64 bg-sidebar border-r border-sidebar-border p-4 hidden lg:block">
         <div className="flex items-center gap-2 mb-8">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
             <Flame className="w-6 h-6 text-primary-foreground" />
           </div>
           <span className="text-lg font-bold">Fortschritt</span>

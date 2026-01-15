@@ -32,7 +32,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50">
         <div className="container flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+            <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
               <Flame className="w-6 h-6 text-primary-foreground" />
             </div>
             <span className="text-xl font-bold">90-Tage Challenge</span>
@@ -61,10 +61,8 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="relative pt-32 pb-20 overflow-hidden">
-        {/* Background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
-        <div className="absolute top-20 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-accent/10 rounded-full blur-3xl" />
+        {/* Background */}
+        <div className="absolute inset-0 bg-muted/30" />
         
         <div className="container relative">
           <div className="max-w-4xl mx-auto text-center">
@@ -74,11 +72,11 @@ export default function Home() {
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-              <span className="bg-gradient-to-r from-foreground via-primary to-foreground bg-clip-text text-transparent">
+              <span className="text-foreground">
                 90 Tage zur
               </span>
               <br />
-              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              <span className="text-primary">
                 besten Version
               </span>
             </h1>
@@ -91,14 +89,14 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               {isAuthenticated ? (
                 <Link href="/dashboard">
-                  <Button size="lg" className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-accent hover:opacity-90">
+                  <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
                     Zum Dashboard
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
                 </Link>
               ) : (
                 <a href={getLoginUrl()}>
-                  <Button size="lg" className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-accent hover:opacity-90">
+                  <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
                     Challenge starten
                     <ArrowRight className="ml-2 w-5 h-5" />
                   </Button>
@@ -220,7 +218,7 @@ export default function Home() {
             ].map((feature, i) => (
               <Card key={i} className="fitness-card group cursor-pointer">
                 <CardContent className="pt-6">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                     <feature.icon className="w-6 h-6 text-primary" />
                   </div>
                   <h3 className="font-semibold mb-2">{feature.title}</h3>
@@ -281,7 +279,7 @@ export default function Home() {
             
             {/* Dashboard Preview */}
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20 rounded-3xl blur-2xl" />
+              <div className="absolute inset-0 bg-primary/10 rounded-3xl blur-2xl" />
               <Card className="relative bg-card/80 backdrop-blur border-border/50">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -461,7 +459,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10">
+      <section className="py-20 bg-muted/50">
         <div className="container">
           <div className="max-w-3xl mx-auto text-center">
             <h2 className="text-3xl md:text-4xl font-bold mb-6">
@@ -473,14 +471,14 @@ export default function Home() {
             </p>
             {isAuthenticated ? (
               <Link href="/dashboard">
-                <Button size="lg" className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-accent hover:opacity-90">
+                <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
                   Zum Dashboard
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
             ) : (
               <a href={getLoginUrl()}>
-                <Button size="lg" className="text-lg px-8 py-6 bg-gradient-to-r from-primary to-accent hover:opacity-90">
+                <Button size="lg" className="text-lg px-8 py-6 bg-primary hover:bg-primary/90">
                   Jetzt kostenlos starten
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
@@ -496,7 +494,7 @@ export default function Home() {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+                <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                   <Flame className="w-4 h-4 text-primary-foreground" />
                 </div>
                 <span className="font-bold">90-Tage Challenge</span>

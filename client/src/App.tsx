@@ -12,6 +12,7 @@ import Services from "./pages/Services";
 import AdminBlog from "./pages/admin/AdminBlog";
 import AdminBlogEdit from "./pages/admin/AdminBlogEdit";
 import Progress from "./pages/Progress";
+import Export from "./pages/Export";
 
 function Router() {
   return (
@@ -21,6 +22,7 @@ function Router() {
       <Route path="/blog/:slug" component={BlogPost} />
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/progress" component={Progress} />
+      <Route path="/export" component={Export} />
       <Route path="/services" component={Services} />
       <Route path="/admin/blog" component={AdminBlog} />
       <Route path="/admin/blog/new" component={AdminBlogEdit} />

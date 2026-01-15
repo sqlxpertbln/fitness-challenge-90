@@ -65,3 +65,10 @@
 - [x] Unit-Tests für Backend-Routen (12 Tests bestanden)
 - [x] Funktionstest aller Features (Landingpage, Blog, Dashboard, Services, Progress)
 - [x] Checkpoint erstellen
+
+## Neue Anforderungen (15.01.2026)
+- [x] Farbverläufe durch solide, elegante Farben ersetzen
+- [x] Blutdruck-Tracking im Dashboard aktivieren
+- [x] Ernährungs-Tracking im Dashboard aktivieren
+- [x] CSV-Export-Funktion für Gesundheitsdaten implementieren
+- [x] Ersten Blog-Beitrag über Challenge-Ziele erstellen
